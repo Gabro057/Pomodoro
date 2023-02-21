@@ -4,8 +4,8 @@ import { supabase } from '../supabase'
 
 export const usePomodoroCategoriesStore = defineStore('counter', {
   state: () => ({
+    actId: 0,
     loading: false,
-    removing: false,
     categories: [],
     form: {
       title: '',
@@ -15,26 +15,48 @@ export const usePomodoroCategoriesStore = defineStore('counter', {
     },
     errorMessage: '',
     successMessage: '',
-    authUser: useAuthState()
-
+    authUser: useAuthState(),
+    showDialog: false,
+    dialogTitle: ''
   }),
   getters: {
     // doubleCount: (state) => state.counter * 2
     // user: this.authUser.user
   },
   actions: {
-    add () {
-      console.log('add')
-      this.categories.push('x')
+    showDialogWin (mode, id, item) {
+      console.log('showDialog mode=' + mode)
+      console.log('id', id)
+      this.showDialog = true
+
+      if (mode === 'update') {
+        this.dialogTitle = 'update'
+        this.form = item
+        this.actId = id
+      } else {
+        this.dialogTitle = 'add'
+        this.form = {
+          title: '',
+          description: '',
+          color: '',
+          seconds: 0
+        }
+      }
     },
     async remove (id) {
       console.log('remove id', id)
-      console.log(this.categories)
-      this.removing = true
       await supabase.from('pomodoro_categories').delete().eq('id', id)
       this.categories = this.categories.filter(cat => cat.id !== id)
-      console.log(this.categories)
-      this.removing = false
+    },
+    async update () {
+      console.log('update this.actId', this.actId)
+      console.log('this.form', this.form)
+      const { data } = await supabase.from('pomodoro_categories').update(this.form).eq('id', this.actId)
+
+      this.categories.forEach((cat, index) => {
+        if (cat.id !== data[0].id) return
+        this.categories[index] = { ...data[0] }
+      })
     },
     async getPomodoroCategories () {
       console.log('getPomodoroCategories ...')
@@ -43,6 +65,7 @@ export const usePomodoroCategoriesStore = defineStore('counter', {
       const { data, error } = await supabase
         .from('pomodoro_categories')
         .select()
+        .eq('user_id', this.authUser.user.id)
 
       console.log('data', data)
       console.log('error', error)

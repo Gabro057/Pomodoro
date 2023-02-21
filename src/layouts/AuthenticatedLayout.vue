@@ -1,3 +1,19 @@
+<script setup>
+import { ref } from 'vue'
+import { getDefaultProvider, useAuthState } from '@vueauth/core'
+import AuthAccountMenu from 'src/auth/components/AccountMenu/AccountMenu.vue'
+
+const leftDrawerOpen = ref(false)
+const authProvider = getDefaultProvider()
+const authProviderUpperFirst = authProvider.charAt(0).toUpperCase() + authProvider.slice(1)
+const authUser = useAuthState()
+const loggedUser = authUser.user.value.email || ''
+
+function toggleLeftDrawer () {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+</script>
+
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header
@@ -15,7 +31,9 @@
         />
 
         <q-toolbar-title>Quasar {{ authProviderUpperFirst }}</q-toolbar-title>
-
+        <q-toolbar-title class="text-right">
+          {{ loggedUser }}
+        </q-toolbar-title>
         <q-btn
           icon="person"
           round
@@ -43,18 +61,3 @@
     </q-page-container>
   </q-layout>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { getDefaultProvider } from '@vueauth/core'
-import AuthAccountMenu from 'src/auth/components/AccountMenu/AccountMenu.vue'
-
-const leftDrawerOpen = ref(false)
-
-const authProvider = getDefaultProvider()
-const authProviderUpperFirst = authProvider.charAt(0).toUpperCase() + authProvider.slice(1)
-
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
-</script>

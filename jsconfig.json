@@ -2,12 +2,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "src/*": [
-        "src/*"
-      ],
-      "app/*": [
-        "*"
-      ],
       "components/*": [
         "src/components/*"
       ],
@@ -22,6 +16,12 @@
       ],
       "boot/*": [
         "src/boot/*"
+      ],
+      "src/*": [
+        "src/*"
+      ],
+      "app/*": [
+        "*"
       ],
       "stores/*": [
         "src/stores/*"
